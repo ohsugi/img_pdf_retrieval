@@ -1,95 +1,47 @@
-# Simple Image Retrieval System
+# img_pdf_retrieval
 
-
-## Overview
-This project builds a simple Image Search Engine using the Keras framework with ResNet-50 as the backbone network (pre-train model). This system is a computer system used for browsing, searching and retrieving images from a large database of digital images.
-
-
-## Method practice
-
-Convolutional Neural Network (ResNet50 backbone) + Cosine Similarity.
-
-## System flowcharts
-
-![System flowcharts!](./repo_img/system_flowcharts.png)
-
-## Structure of directory
-
-```bash
-├── feature_extractor.py
-├── offline.py
-├── __pycache__
-│   └── feature_extractor.cpython-37.pyc
-├── README.md
-├── server.py
-├── static
-│   ├── feature_database
-│   │   ├── concat_all_feature.npz
-│   │   ├── lion.npz
-│   │   ├── pig.npz
-│   │   ├── ...
-│   ├── image_database
-│   │   ├── lion
-│   │   │   ├── 0209bbf635.jpg
-│   │   │   ├── 05d42c9bd8.jpg
-│   │   │   ├── ...
-│   │   ├── pig
-│   │   │   ├── 00ddea87ad.jpg
-│   │   │   ├── 02b26f142c.jpg
-│   │   │   ├── ...
-│   │   ├── ...
-│   └── image_uploaded
-└── templates
-    └── index.html
-```
-
-
-## Hardware configuration
-
-```
-- Memory: 8,0 GiB
-- Processor: Intel® Core™ i5-8365U CPU @ 1.60GHz × 8
-- OS: Ubuntu 22.04.1 LTS (64-bit)
-```
-
-
-## Dataset
-
-[Animal Image Dataset (90 different categories, 60 images per categories): 5400 Animal Images](https://www.kaggle.com/datasets/iamsouravbanerjee/animal-image-dataset-90-different-animals)
-
+## Requirements
+- Git
+- Anaconda
+- Python 3.7.2
 
 ## Setup
-- Python 3.7 is used in this repository.
-- Clone the repository:
+Type below commands on the Analconda Prompt sequentially.
 ```
-$ git clone https://github.com/danghieuan/Image-Retrieval-System.git
-```
-
-
-## Feature Extractor (Employing ResNet-50 as the backbone network)
-
-```
-$ cd Image-Retrieval-System
-$ python offline.py
-```
-![offline!](./repo_img/offline_py.png)
-
-
-## Demo on Flask API
-
-```
-$ python server.py
+git clone https://gitlab.com/naoki.ohsugi/img_pdf_retrieval.git
+cd img_pdf_retrieval
+conda create -n img_pdf_retrieval python==3.7.2
+conda activate img_pdf_retrieval
+pip install -r requirements.txt
 ```
 
-![demo!](./repo_img/demo.png)
+Download **poppler-windows** from [@oschwartz10612's repo](https://github.com/oschwartz10612/poppler-windows/releases/).
+Please make sure to add the `bin/` folder to **PATH** or use `poppler_path = r"C:\path\to\poppler-xx\bin" as an argument` in `convert_from_path`.
+Update **[FOLDERS]** section in `config.ini`
 
+## Indexing
+Before booting server, need indexing 
+```
+python indexing.py
+```
 
-## Todo
-- Research Product Quantization algorithm for larger-scale indexing.
+It takes a few hours, according to the registered folders and the number of files found in your environment.
 
+## Launching search server and open screen
+```
+python search_server.py
+```
+![search_server_commandline.png](./images/search_server_commandline.png)
 
-## Reference
-- CVPR 2020 Tutorial on [Image Retrieval in the Wild](https://matsui528.github.io/cvpr2020_tutorial_retrieval/), author: Yusuke Matsui and Takuma Yamaguchi and Zheng Wang.
-- He, Kaiming, et al. ["Deep residual learning for image recognition."](https://arxiv.org/abs/1512.03385) Proceedings of the IEEE conference on computer vision and pattern recognition. 2016.
-- [Deep Learning with Python](https://www.manning.com/books/deep-learning-with-python) - François Chollet.
-- [Changing the contrast and brightness of an image!](https://docs.opencv.org/3.4/d3/dc1/tutorial_basic_linear_transform.html) - OpenCV.
+Open [http://127.0.0.1:5000/](http://127.0.0.1:5000/) on the browser.
+
+## Search Server Screen
+ 1. Push button and select image to search.
+ 2. Push `Submit` button
+ 3. Input image to be shown in the area (3)
+ 4. Found images will be shown in the area (4)
+![search_server_screen.png](./images/search_server_screen.png)
+
+## TODO
+ - Record the time stamp of the source files and skip already indexed and not updated files in the database.
+ - Running on the system tray and execute indexing periodically (e.g. every 12 hours).

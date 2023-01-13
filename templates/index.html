@@ -1,24 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-    <head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></head>
-    <body>
-        <div class="container">
-            <h1>Demo công cụ tìm kiếm hình ảnh đơn giản</h1>
-            <form method="POST" enctype="multipart/form-data">
-                <input type="file" name="query_img"><br>
-                <input type="submit">
-            </form>
-            <h2>Ảnh truy vấn:</h2>
-            {% if query_path %}
-            <img src="{{ query_path }}" width="300px">
-            {% endif %}
-            <h3>Kết quả truy vấn:</h3>
-            {% for score in scores %}
-            <figure style="float: left; margin-right: 20px; margin-bottom: 20px;">
-                <img src="{{ score[1] }}" height="200px">
-                <figcaption>{{ score[0] }}</figcaption>
-            </figure>
-            {% endfor %}
-        </div>
-    </body>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Search</h1>
+      <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="query_img" /><br />
+        <input type="submit" />
+      </form>
+      <h2>Input Image</h2>
+      {% if query_path %}
+      <img src="{{ query_path }}" width="300px" />
+      {% endif %}
+      <hr />
+      <h3>Result Images</h3>
+      {% for score in scores %}
+      <figure style="float: left; margin-right: 20px; margin-bottom: 20px">
+        <img src="{{ score[2] }}" width="200px" />
+        <figcaption>
+          <b>Score: {{ score[0] }}%</b><br />
+          {{ score[1] }}<br />
+          <!--Source: {{ score[3] }}-->
+        </figcaption>
+      </figure>
+      <br />
+      {% endfor %}
+    </div>
+  </body>
 </html>
