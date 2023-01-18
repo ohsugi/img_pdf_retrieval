@@ -20,6 +20,7 @@ pip install -r requirements.txt
 ### Setup for PDF search
 If no need to search PDF files, the following setting can be skipped. Otherwise, download **poppler-windows** from [@oschwartz10612's repo](https://github.com/oschwartz10612/poppler-windows/releases/).
 Please make sure to add the `bin/` folder to **PATH** or use `poppler_path = r"C:\path\to\poppler-xx\bin" as an argument` in `convert_from_path`.
+
 Update **[FOLDERS]** section in `config.ini`
 
 ### Setup Target Folders
