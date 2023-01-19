@@ -1,6 +1,7 @@
 import configparser
 import pathlib
 import os
+import tqdm
 
 def get_data_path(path):
     data_path = pathlib.Path(path)
@@ -19,6 +20,7 @@ def load_config(filename):
     feature_file_ext = get_data_path(config.get("DATA_PATH", "feature_file_ext"))
     uploaded_path = get_data_path(config.get("DATA_PATH", "uploaded_path"))
     pdf_image_path = get_data_path(config.get("DATA_PATH", "pdf_image_path"))
+    poppler_path = get_data_path(config.get("DATA_PATH", "poppler_path"))
     
     i = 0
     folder_list = []
@@ -40,14 +42,12 @@ def load_config(filename):
     except configparser.NoOptionError:
         pass
     
-    return (cache_path, feature_path, feature_file_ext, uploaded_path, pdf_image_path, folder_list, type_list)
+    return (cache_path, feature_path, feature_file_ext, uploaded_path, pdf_image_path, poppler_path, folder_list, type_list)
 
 
 import numpy as np  # manipulating array
 from keras_preprocessing import image as kimage   # read image, resize image               
 from feature_extractor import FeatureExtractor
-
-
 # Path of image folder
 def path_and_image_nparray(path):
     images_np = np.zeros(shape=(1, 224, 224, 3))
@@ -80,10 +80,10 @@ def get_file_list(folder_list, type_list):
 
 
 from pdf2image import convert_from_path
-def copy_pdf2image(file):
+def copy_pdf2image(file, poppler_path):
     pages = []
     try:
-        pages = convert_from_path(str(file), 150)
+        pages = convert_from_path(str(file), 150, poppler_path=poppler_path)
     except Exception:
         print("Error: ", file)
     
@@ -100,7 +100,7 @@ def copy_pdf2image(file):
 if __name__ == "__main__":
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-    (cache_path, feature_path, feature_file_ext, uploaded_path, pdf_image_path, folder_list, type_list) = load_config("./config.ini")
+    (cache_path, feature_path, feature_file_ext, uploaded_path, pdf_image_path, poppler_path, folder_list, type_list) = load_config("./config.ini")
     
     file_list = get_file_list(folder_list, type_list)
     fe = FeatureExtractor()
@@ -109,15 +109,14 @@ if __name__ == "__main__":
     image_feature_list = []
     source_path_feature_list = []
     i = 0
-    for file in file_list:
+    for file in tqdm.tqdm(file_list):
         i += 1
-        print(f"[{round(i/len(file_list)*100)}%] {i}/{len(file_list)}: {file}")
         target_file_list = []
         if get_file_ext(file) == ".pdf":
-            target_file_list = copy_pdf2image(file)
+            target_file_list = copy_pdf2image(file, poppler_path)
         else:
             target_file_list.append(file)
-        for target_file in target_file_list:
+        for target_file in tqdm.tqdm(target_file_list, leave=False):
             image_path, image_np = path_and_image_nparray(target_file)
             if not image_path in path_feature_list:
                 path_feature_list.extend(image_path)

@@ -12,7 +12,6 @@ def load_config(filename):
     
     return (cache_path, feature_path, uploaded_path)
 
-
 import numpy as np
 from PIL import Image
 from feature_extractor import FeatureExtractor
