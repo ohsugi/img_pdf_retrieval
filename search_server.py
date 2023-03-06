@@ -1,17 +1,4 @@
-import configparser
-
-## Loading config file
-def load_config(filename):
-    config = configparser.ConfigParser()
-    config.read(filename)
-    
-    cache_path = config.get("DATA_PATH", "cache_path")
-    feature_path = config.get("DATA_PATH", "feature_path") + config.get("DATA_PATH", "feature_file_ext")
-    uploaded_path = config.get("DATA_PATH", "uploaded_path")
-    pdf_image_path = config.get("DATA_PATH", "pdf_image_path")
-    
-    return (cache_path, feature_path, uploaded_path)
-
+from config_reader import ConfigReader 
 import numpy as np
 from PIL import Image
 from feature_extractor import FeatureExtractor
@@ -21,14 +8,13 @@ from keras_preprocessing import image as kimage
 
 app = Flask(__name__)
 fe = FeatureExtractor()
+config = ConfigReader()
 
 # Define Cosine Similarity function
 def cosine_similarity(query, X):
     norm_2_query = np.sqrt(np.sum(query*query))
     norm_2_X = np.sqrt(np.sum(X*X, axis=-1))
     return np.sum(query*X, axis=-1)/(norm_2_query*norm_2_X)
-
-(cache_path, feature_path, uploaded_path) = load_config("./config.ini")
 
 import shutil
 
@@ -40,12 +26,12 @@ def retrieval_images(query_vector, image_feature_list, source_path_feature_list)
     for id in id_s:
         file = path_feature_list[id]
         # copied_file = cache_path + pathlib.Path(file).name
-        copied_file = cache_path + file.replace('\\', '_')
+        copied_file = config.cache_path + file.replace('\\', '_')
         shutil.copy2(file, copied_file)
         return_list.append((round(values[id]*100, 2), file, copied_file, source_path_feature_list[id]))
     return return_list
 
-data = np.load(feature_path)
+data = np.load(config.feature_path)
 path_feature_list = data["array_1"]
 image_feature_list = data["array_2"]
 source_path_feature_list = data["array_3"]
@@ -59,7 +45,7 @@ def index():
         
         # Save query image from Flask server into static/image_uploaded/
         img = Image.open(file.stream)
-        uploaded_file = uploaded_path + datetime.now().isoformat().replace(":", ".") + "_" + file.filename
+        uploaded_file = config.uploaded_path + datetime.now().isoformat().replace(":", ".") + "_" + file.filename
         img.save(uploaded_file)
         
         # Load query image and FeatureExtractor
